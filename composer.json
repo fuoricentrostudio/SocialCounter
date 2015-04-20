@@ -1,0 +1,23 @@
+{
+    "name": "fuoricentrostudio/social-counter-php",
+    "type": "project",
+    "title": "SocialCounter",
+    "description": "A PHP Script to retreive the share count from specific Social Networks",
+    "keywords": [
+        "social",
+        "share",
+        "php"
+    ],
+    "authors": [
+        {
+        "name" : "Brando Meniconi",
+        "email" : "b.meniconi@fuoricentrostudio.com",
+        "homepage" : "http://www.fuoricentrostudio.com"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.4",
+        "phpfastcache/phpfastcache": "~3.0.4"
+    }
+}
