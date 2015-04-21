@@ -3,46 +3,91 @@
  * by Brando Meniconi (b.meniconi@fuoricentrostudio.com)
  */
 
-header('content-type: application/json');
+namespace fuoricentrostudio;
 
-$json = array(
-    'url'=>filter_input(INPUT_GET, 'url', FILTER_VALIDATE_URL),
-    'count'=>0
-    );
-
-if(empty($json['url'])){
-   return json_encode($json);
+if(file_exists(dirname(__FILE__).'vendor/composer/autoload.php')){
+    include_once dirname(__FILE__).'vendor/composer/autoload.php';
 }
 
-$context = stream_context_create(array(
-  'http'=>array(
-    //'proxy' => 'tcp://proxy.example.com:5100', //  
-    'max_redirects' => 5,
-    'user_agent' => 'Sharrre',
-    'timeout' => 5,
-    'verify_peer' => false,
-  )
-));
-
-
-switch(filter_input(INPUT_GET, 'method')){
-   case 'googlePlus':
-    $response = file_get_contents('https://plusone.google.com/u/0/_/+1/fastbutton?url=' . urlencode($json['url']) . '&count=true', false, $context);
-
-    $matches = array();
-    if(!empty($response) && preg_match( '/window\.__SSR = {c: ([^,]+)/', $response, $matches )){
-      $json['count'] = floatval($matches[1]);
+class SocialCounter {
+      
+    public static $cache = true;
+    
+    public static $stream_context = array(
+        'http'=>array(
+          //'proxy' => 'tcp://proxy.example.com:5100', //  
+          'max_redirects' => 5,
+          'user_agent' => 'Sharrre',
+          'timeout' => 5,
+          'verify_peer' => false,
+        )
+    );
+        
+    public static function count($provider, $url){
+        
+        $count = self::getCache(self::cacheKey($provider, $url));
+        if(!$count){
+            $count = self::update($provider, $url);
+            self::setCache(self::cacheKey($provider, $url), $count);
+        }
+        
+        return $count;
     }
-    break;
+    
+    public static function update($provider, $url){
+   
+        switch($provider){
+            case 'googlePlus':
+                $response = self::request('https://plusone.google.com/u/0/_/+1/fastbutton?url=' . urlencode($url) . '&count=true');
+                $matches = array();
+                if(!empty($response) && preg_match( '/window\.__SSR = {c: ([^,]+)/', $response, $matches )){
+                  $json['count'] = floatval($matches[1]);
+                }
+                break;
 
-   case 'stumbleUpon':
-    $response = file_get_contents("http://www.stumbleupon.com/services/1.01/badge.getinfo?url=".urlencode($json['url']), false, $context); 
-    if (!empty($response) && ($result = json_decode($response)) && isset($result->result->views))
-    {
-        $json['count'] = floatval((int)$result->result->views);
+            case 'stumbleUpon':
+                $response = self::request("http://www.stumbleupon.com/services/1.01/badge.getinfo?url=".urlencode($url)); 
+                if (!empty($response) && ($result = json_decode($response)) && isset($result->result->views))
+                {
+                    $json['count'] = floatval((int)$result->result->views);
+                }
+
+            break;
+        }   
+        
     }
-
-    break;
-   }
-
-  echo json_encode($json);  
+    
+    public static function request($url, $stream_context=null){
+                
+        $context = stream_context_create($stream_context?$stream_context:self::$stream_context);
+        
+        return file_get_contents($url, false, $context);
+    }
+    
+    public static function getCache($key) {
+        
+        if(!class_exists('phpFastCache')){
+            return false;
+        }
+        
+        $cache = phpFastCache();
+         
+        return $cache->get($key);
+    }
+    
+    public static function setCache($key, $data) {
+        
+        if(!class_exists('phpFastCache')){
+            return false;
+        }
+        
+        $cache = phpFastCache();
+         
+        return $cache->set($key, $data, 60);
+    }    
+    
+    public static function cacheKey($provider, $url){
+        return $provider.'_'.md5($url);
+    }
+    
+}
