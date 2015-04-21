@@ -10,9 +10,7 @@ if(file_exists(dirname(__FILE__).'vendor/composer/autoload.php')){
 }
 
 class SocialCounter {
-      
-    public static $cache = true;
-    
+          
     public static $stream_context = array(
         'http'=>array(
           //'proxy' => 'tcp://proxy.example.com:5100', //  
