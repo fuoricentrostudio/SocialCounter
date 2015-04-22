@@ -1,5 +1,5 @@
 {
-    "name": "fuoricentrostudio/social-counter-php",
+    "name": "fuoricentrostudio/socialsharescounter",
     "type": "project",
     "title": "SocialCounter",
     "description": "A PHP Script to retreive the share count from specific Social Networks",
@@ -15,6 +15,9 @@
         "homepage" : "http://www.fuoricentrostudio.com"
         }
     ],
+    "autoload": {
+        "psr-4": {"Fuoricentrostudio\\SocialShares\\": "src/"}
+    },    
     "license": "MIT",
     "require": {
         "php": ">=5.4",

@@ -3,19 +3,19 @@
  * by Brando Meniconi (b.meniconi@fuoricentrostudio.com)
  */
 
-namespace fuoricentrostudio;
+namespace Fuoricentrostudio\SocialShares;
 
-if(file_exists(dirname(__FILE__).'vendor/composer/autoload.php')){
-    include_once dirname(__FILE__).'vendor/composer/autoload.php';
+if(file_exists('vendor/autoload.php')){
+    require 'vendor/autoload.php';
 }
 
-class SocialCounter {
+class Counter {
           
     public static $stream_context = array(
         'http'=>array(
           //'proxy' => 'tcp://proxy.example.com:5100', //  
           'max_redirects' => 5,
-          'user_agent' => 'Sharrre',
+          'user_agent' => 'Social Counter',
           'timeout' => 5,
           'verify_peer' => false,
         )
