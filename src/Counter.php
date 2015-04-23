@@ -5,10 +5,6 @@
 
 namespace Fuoricentrostudio\SocialShares;
 
-if(file_exists('vendor/autoload.php')){
-    require 'vendor/autoload.php';
-}
-
 class Counter {
           
     public static $stream_context = array(
@@ -34,12 +30,14 @@ class Counter {
     
     public static function update($provider, $url){
    
+        $count = false;
+        
         switch($provider){
             case 'googlePlus':
                 $response = self::request('https://plusone.google.com/u/0/_/+1/fastbutton?url=' . urlencode($url) . '&count=true');
                 $matches = array();
                 if(!empty($response) && preg_match( '/window\.__SSR = {c: ([^,]+)/', $response, $matches )){
-                  $json['count'] = floatval($matches[1]);
+                    $count = floatval($matches[1]);
                 }
                 break;
 
@@ -47,11 +45,13 @@ class Counter {
                 $response = self::request("http://www.stumbleupon.com/services/1.01/badge.getinfo?url=".urlencode($url)); 
                 if (!empty($response) && ($result = json_decode($response)) && isset($result->result->views))
                 {
-                    $json['count'] = floatval((int)$result->result->views);
+                    $count = floatval($result->result->views);
                 }
 
             break;
         }   
+        
+        return $count;
         
     }
     
