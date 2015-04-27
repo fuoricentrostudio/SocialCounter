@@ -7,6 +7,19 @@ namespace Fuoricentrostudio\SocialShares;
 
 class Counter {
           
+    public static $cache_config = array(
+        'adapter' => array(
+            'name'    => 'apc',
+            'options' => array('ttl' => 3600),
+        ),
+        'plugins' => array(
+            // Don't throw exceptions on cache errors
+            'exception_handler' => array(
+                'throw_exceptions' => false
+            ),
+        )
+    );
+    
     public static $stream_context = array(
         'http'=>array(
           //'proxy' => 'tcp://proxy.example.com:5100', //  
@@ -64,24 +77,24 @@ class Counter {
     
     public static function getCache($key) {
         
-        if(!class_exists('phpFastCache')){
+        if(!class_exists('\Zend\Cache\StorageFactory') || empty(self::$cache_config)){
             return false;
         }
         
-        $cache = phpFastCache();
-         
-        return $cache->get($key);
+        $cache = \Zend\Cache\StorageFactory::factory(self::$cache_config);
+        
+        return $cache->getItem($key);
     }
     
     public static function setCache($key, $data) {
         
-        if(!class_exists('phpFastCache')){
+        if(!class_exists('\Zend\Cache\StorageFactory') || empty(self::$cache_config)){
             return false;
         }
         
-        $cache = phpFastCache();
+        $cache = \Zend\Cache\StorageFactory::factory(self::$cache_config);
          
-        return $cache->set($key, $data, 60);
+        return $cache->set($key, $data);
     }    
     
     public static function cacheKey($provider, $url){
