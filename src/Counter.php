@@ -94,7 +94,7 @@ class Counter {
         
         $cache = \Zend\Cache\StorageFactory::factory(self::$cache_config);
          
-        return $cache->set($key, $data);
+        return $cache->setItem($key, $data);
     }    
     
     public static function cacheKey($provider, $url){
