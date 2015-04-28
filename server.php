@@ -9,10 +9,12 @@ if(file_exists( dirname(dirname(dirname(__FILE__))).'/autoload.php' )){
 
 $input = filter_input_array(INPUT_GET, array( 
     'url' => FILTER_SANITIZE_URL, 
-    'type'=> FILTER_SANITIZE_STRIPPED
+    'method'=> FILTER_SANITIZE_STRIPPED
     )
         );
+
+Fuoricentrostudio\SocialShares\Counter::$cache_config = null;
     
-if(!empty($input['url']) && !empty($input['type']) ){
-    echo json_encode(Fuoricentrostudio\SocialShares\Counter::count($input['type'], $input['url']));
+if(!empty($input['url']) && !empty($input['method']) ){
+    echo json_encode(array('count'=>Fuoricentrostudio\SocialShares\Counter::count($input['method'], $input['url'])));
 }
