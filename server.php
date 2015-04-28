@@ -1,5 +1,7 @@
 <?php 
 
+header('Content-Type: application/json');
+
 //search for composer autoloader
 if(file_exists( dirname(dirname(dirname(__FILE__))).'/autoload.php' )){
     require dirname(dirname(dirname(__FILE__))).'/autoload.php';
